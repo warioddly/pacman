@@ -15,4 +15,7 @@ class Character extends SpriteAnimationComponent with HasGameReference<PacmanGam
     animation: animation,
   );
 
+  final Vector2 velocity = Vector2.zero();
+  final double moveSpeed = 100;
+
 }
