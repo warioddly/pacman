@@ -13,7 +13,7 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
   Future<void> onLoad() async {
     await super.onLoad();
 
-    debugMode = true;
+    debugMode = false;
 
     await images.loadAll([
       'ember.png',
@@ -24,7 +24,8 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     addAll([
       FpsTextComponent(),
 
-      Level(),
+      Level()
+        ..center = size / 5,
 
       Enemy()
         ..center = size / 1.8,

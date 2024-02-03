@@ -4,13 +4,20 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:pacman/config/constants.dart';
 import 'package:pacman/game.dart';
 import 'package:pacman/characters/player.dart';
 
 import 'character.dart';
 
 
-class Enemy extends Character with HasGameRef<PacmanGame>, CollisionCallbacks{
+class Enemy extends Character with HasGameRef<PacmanGame> {
+
+
+  Enemy() {
+    setMoveSpeed = enemySpeed;
+  }
+
 
 
   @override
@@ -30,7 +37,6 @@ class Enemy extends Character with HasGameRef<PacmanGame>, CollisionCallbacks{
      add(RectangleHitbox());
 
   }
-
 
 
   @override
@@ -69,13 +75,13 @@ class Enemy extends Character with HasGameRef<PacmanGame>, CollisionCallbacks{
   }
 
 
-
   @override
   void onCollisionStart(
     Set<Vector2> intersectionPoints,
     PositionComponent other,
   ) {
     super.onCollisionStart(intersectionPoints, other);
+
     if (other is Player) {
       FlameAudio.play('pacman_death.wav');
     }

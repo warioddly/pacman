@@ -2,11 +2,17 @@ import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
+import 'package:pacman/components/wall.dart';
+import 'package:pacman/config/constants.dart';
 import 'character.dart';
 
 
 class Player extends Character with KeyboardHandler {
 
+
+  Player() {
+    setMoveSpeed = playerSpeed;
+  }
 
   LogicalKeyboardKey? lastPressedKey;
 
@@ -14,6 +20,8 @@ class Player extends Character with KeyboardHandler {
   @override
   FutureOr<void> onLoad() async {
     super.onLoad();
+
+    debugMode = true;
 
     animation = SpriteAnimation.fromFrameData(
       game.images.fromCache('ember.png'),
@@ -23,7 +31,8 @@ class Player extends Character with KeyboardHandler {
         stepTime: 0.12,
       ),
     );
-    size = Vector2.all(30);
+
+    size = Vector2.all(tileSize - 4);
 
     add(RectangleHitbox());
 
@@ -75,7 +84,7 @@ class Player extends Character with KeyboardHandler {
   }
 
 
-  void continueMoving() {
+  void continueMoving()  {
     if (lastPressedKey == LogicalKeyboardKey.arrowLeft) {
       velocity
         ..x = -moveSpeed
@@ -100,5 +109,15 @@ class Player extends Character with KeyboardHandler {
     }
   }
 
+
+  @override
+  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollisionStart(intersectionPoints, other);
+
+    if (other is Wall) {
+
+    }
+
+  }
 
 }
