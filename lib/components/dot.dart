@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
@@ -18,7 +20,11 @@ class Dot extends SpriteAnimationComponent with HasGameRef<PacmanGame>, Collisio
       image: await game.images.load('stars.png'),
       rows: 4,
       columns: 4,
-    ).createAnimation(row: 0, to: 4, stepTime: 0.1);
+    ).createAnimation(
+        row: 0,
+        to: 4,
+        stepTime: Random().nextDouble() * 0.1 + 0.1
+    );
 
     add(CircleHitbox());
 
