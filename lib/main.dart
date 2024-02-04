@@ -4,8 +4,26 @@ import 'package:pacman/game.dart';
 
 void main() {
 
-
-  runApp(GameWidget(game: PacmanGame()));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const Game());
 
 }
+
+
+class Game extends StatelessWidget {
+  const Game({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GameWidget(
+      game: PacmanGame(
+        viewportResolution: Vector2(
+          MediaQuery.of(context).size.width,
+          MediaQuery.of(context).size.height,
+        ),
+      ),
+    );
+  }
+}
+
 

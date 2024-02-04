@@ -32,21 +32,17 @@ class Wall extends PositionComponent with HasGameRef<PacmanGame>, CollisionCallb
       RectangleComponent(
         size: Vector2.all(tileSize),
         paint: paint,
+        children: [
+          RectangleHitbox(
+            position: Vector2.zero(),
+            anchor: Anchor.center,
+            size: Vector2.all(6),
+          )
+        ]
       ),
     );
 
-    add(RectangleHitbox(size: Vector2.all(tileSize)));
-
   }
-
-
-
-  // @override
-  // void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
-  //   super.onCollisionStart(intersectionPoints, other);
-  //
-  //
-  // }
 
 
 

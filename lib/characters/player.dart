@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'dart:math';
+import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/geometry.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pacman/components/wall.dart';
 import 'package:pacman/config/constants.dart';
-import 'package:pacman/level/map.dart';
-import 'package:pacman/utils/path_checker.dart';
 import 'character.dart';
 
 
@@ -17,13 +19,6 @@ class Player extends Character with KeyboardHandler {
   }
 
   LogicalKeyboardKey? lastPressedKey;
-  PathChecker pathChecker = PathChecker();
-
-
-  bool canMoveLeft = true;
-  bool canMoveRight = true;
-  bool canMoveTop = true;
-  bool canMoveBottom = true;
 
 
   @override
@@ -41,120 +36,148 @@ class Player extends Character with KeyboardHandler {
       ),
     );
 
-    size = Vector2.all(tileSize - 5);
-
-    add(RectangleHitbox());
-
+    size = Vector2.all(tileSize);
 
 
   }
 
+  Ray2? ray;
+  Ray2? reflection;
+  static const numberOfRays = 4;
+  final List<Ray2> rays = [];
+  final List<RaycastResult<ShapeHitbox>> results = [];
+
+  get getOrigin => absolutePosition;
+
+  bool canMoveTop = true;
+  bool canMoveBottom = true;
+  bool canMoveLeft = true;
+  bool canMoveRight = true;
+
+  late Ray2 rightRay;
+  late Ray2 leftRay;
 
   @override
   void update(double dt) {
 
-    final response = pathChecker.check(position, Level.map);
+    gameRef.collisionDetection.raycastAll(
+      getOrigin,
+      numberOfRays: numberOfRays,
+      rays: rays,
+      out: results,
+      maxDistance: 300
+    );
 
-    canMoveRight  = response.$1;
-    canMoveLeft   = response.$2;
-    canMoveTop    = response.$3;
-    canMoveBottom = response.$4;
+    for (final result in results) {
 
-    print(response);
+      getRayDirection(result);
+
+    }
 
     continueMoving(dt);
-
     super.update(dt);
+
   }
 
+
+
+  void getRayDirection(RaycastResult<ShapeHitbox> ray) {
+
+    if (!ray.isActive) {
+      return;
+    }
+
+    final distance = ray.intersectionPoint!.distanceTo(absolutePosition) / tileSize;
+
+    const safetyDistance = 0.65;
+
+    canMoveRight = true;
+    canMoveLeft = true;
+
+
+
+    if(ray.normal!.x == -1 && distance <= safetyDistance) {
+      canMoveRight = false;
+    }
+
+    if(ray.normal!.x == 1 && distance >= safetyDistance) {
+      canMoveLeft = false;
+    }
+
+
+  }
 
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     if (event is RawKeyDownEvent) {
-
-      // if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      //   if (velocity.x <= 0){
-      //     flipHorizontallyAroundCenter();
-      //   }
-      // }
-      // else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-      //   if (velocity.x <= -1) {
-      //     flipHorizontallyAroundCenter();
-      //   }
-      // }
-      // else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      //   velocity
-      //     ..y = -moveSpeed
-      //     ..x = 0;
-      // }
-      // else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      //   velocity
-      //     ..y = moveSpeed
-      //     ..x = 0;
-      // }
-
       lastPressedKey = event.logicalKey;
-
     }
     return false;
   }
 
 
   void continueMoving(dt)  {
-    if (canMoveLeft && lastPressedKey == LogicalKeyboardKey.arrowLeft || lastPressedKey == LogicalKeyboardKey.keyA) {
-      velocity
-        ..x = -moveSpeed
-        ..y = 0;
+    if (canMoveLeft && (lastPressedKey == LogicalKeyboardKey.arrowLeft || lastPressedKey == LogicalKeyboardKey.keyA)) {
+      velocity = Vector2(-moveSpeed, 0);
       position += velocity * dt;
+      return;
     }
-    else if (canMoveRight && lastPressedKey == LogicalKeyboardKey.arrowRight || lastPressedKey == LogicalKeyboardKey.keyD) {
-      velocity
-        ..x = moveSpeed
-        ..y = 0;
+    else if (canMoveRight && (lastPressedKey == LogicalKeyboardKey.arrowRight || lastPressedKey == LogicalKeyboardKey.keyD)) {
+      velocity = Vector2(moveSpeed, 0);
       position += velocity * dt;
-
+      return;
     }
-    else if (canMoveTop && lastPressedKey == LogicalKeyboardKey.arrowUp || lastPressedKey == LogicalKeyboardKey.keyW) {
-      velocity
-        ..y = -moveSpeed
-        ..x = 0;
+    else if (canMoveTop && (lastPressedKey == LogicalKeyboardKey.arrowUp || lastPressedKey == LogicalKeyboardKey.keyW)) {
+      velocity = Vector2(0, -moveSpeed);
       position += velocity * dt;
+      return;
     }
-    else if (canMoveBottom && lastPressedKey == LogicalKeyboardKey.arrowDown || lastPressedKey == LogicalKeyboardKey.keyS) {
-      velocity
-        ..y = moveSpeed
-        ..x = 0;
+    else if (canMoveBottom && (lastPressedKey == LogicalKeyboardKey.arrowDown || lastPressedKey == LogicalKeyboardKey.keyS)) {
+      velocity = Vector2(0, moveSpeed);
       position += velocity * dt;
-
+      return;
     }
-
-    if (lastPressedKey == LogicalKeyboardKey.escape) {
-      velocity
-        ..y = 0
-        ..x = 0;
+    else if (lastPressedKey == LogicalKeyboardKey.escape) {
+      velocity = Vector2.zero();
     }
-
+    else {
+      velocity = Vector2.zero();
+    }
 
   }
 
 
+
   @override
-  void onCollisionStart(
-      Set<Vector2> intersectionPoints,
-      PositionComponent other,
+  void render(Canvas canvas) {
+    super.render(canvas);
+    renderResult(canvas, getOrigin, results, paint);
+  }
+
+
+
+  void renderResult(
+      Canvas canvas,
+      Vector2 origin,
+      List<RaycastResult<ShapeHitbox>> results,
+      Paint paint,
   ) {
-    final myCenter =
-    Vector2(position.x + tileSize / 2, position.y + tileSize / 2);
-    if (other is Wall) {
 
-      lastPressedKey = null;
-      final diffX = myCenter.x - other.x;
-      final diffY = myCenter.y - other.y;
-      position = Vector2(position.x + diffX / 20, position.y + diffY / 20);
+    final originOffset = origin.toOffset();
 
+    for (final result in results) {
+      if (!result.isActive) {
+        continue;
+      }
+      final intersectionPoint = result.intersectionPoint!.toOffset();
+      canvas.drawLine(
+        originOffset,
+        intersectionPoint,
+        paint,
+      );
     }
 
-    super.onCollisionStart(intersectionPoints, other);
+    canvas.drawCircle(originOffset, 5, paint);
   }
 
 

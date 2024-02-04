@@ -1,11 +1,27 @@
+import 'dart:ui';
+
+import 'package:flame/camera.dart';
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:pacman/config/constants.dart';
 import 'package:pacman/level/map.dart';
 
 
 class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
 
+
+  PacmanGame({
+    required this.viewportResolution,
+  }) : super(
+    camera: CameraComponent.withFixedResolution(
+      width: viewportResolution.x,
+      height: viewportResolution.y,
+    ),
+  );
+
+  final Vector2 viewportResolution;
 
   @override
   Future<void> onLoad() async {
@@ -20,19 +36,14 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       'stars.png',
     ]);
 
-    addAll([
-      FpsTextComponent(),
+    add(FpsTextComponent());
 
-      Level()
-        ..center = size / 5,
+    add(
+        Level()
+          ..anchor = Anchor.center
+    );
 
-      // Enemy()
-      //   ..center = size / 1.8,
-      // Enemy()
-      //   ..center = size / 3,
-      // Enemy()
-      //   ..center = size / 1.5,
-    ]);
+
 
   }
 

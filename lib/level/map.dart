@@ -14,16 +14,16 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
     "#.....p....#..........#",
     "#.##.###.#.#.#.###.##.#",
     "#..........#..........#",
-    "#.####.#########.# #..#",
-    "#.# #.....#     #    ##",
-    "#.#  #.# # ####### ####",
-    "#.#     # #   #   #   #",
-    "#.####### ### # ## ## #",
-    "#.......#       #.....#",
-    "#####.#.########.######",
-    "# #...#   #...........#",
-    "# ###.#################",
-    "# #...................#",
+    "#.####.#########.#.#..#",
+    "#.#.#.....#......#....#",
+    "#.#.##.#.#..#.##.##.###",
+    "#.#....#...#..#...#...#",
+    "#.##.####.###.#.##.##.#",
+    "#.......#........#....#",
+    "#####.#.#####.##.##.###",
+    "#.....#...#...........#",
+    "#.###.##.##.###.#####.#",
+    "#.....................#",
     "#######################"
   ];
 
@@ -43,19 +43,20 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
             position: Vector2(x * tileSize, y * tileSize))
           );
 
-        }
-        if (char == '.') {
-          add(Dot()
-            ..position = Vector2(x * tileSize, y * tileSize)
-            ..center = Vector2(x * tileSize + 15, y * tileSize + 15)
-          );
-        }
+          continue;
 
-
+        }
+        // if (char == '.') {
+        //   add(Dot()
+        //     ..position = Vector2(x * tileSize, y * tileSize)
+        //     ..center = Vector2(x * tileSize + 15, y * tileSize + 15)
+        //   );
+        // continue;
+        // }
         if (char == 'p') {
           add(Player()
             ..position = Vector2(x * tileSize, y * tileSize)
-            ..center = Vector2(x * tileSize + 4, y * tileSize + 4)
+            ..center = Vector2(x * tileSize, y * tileSize)
           );
         }
 

@@ -3,7 +3,7 @@ import 'package:flame/components.dart';
 import 'package:pacman/game.dart';
 
 
-class Character extends SpriteAnimationComponent with HasGameReference<PacmanGame>, CollisionCallbacks {
+class Character extends SpriteAnimationComponent with HasGameRef<PacmanGame>, CollisionCallbacks {
 
 
   Character({
@@ -16,7 +16,7 @@ class Character extends SpriteAnimationComponent with HasGameReference<PacmanGam
     animation: animation,
   );
 
-  final Vector2 velocity = Vector2.zero();
+  Vector2 velocity = Vector2.zero();
   double _moveSpeed = 100.0;
 
 

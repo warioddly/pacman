@@ -5,13 +5,12 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:pacman/config/constants.dart';
-import 'package:pacman/game.dart';
 import 'package:pacman/characters/player.dart';
 
 import 'character.dart';
 
 
-class Enemy extends Character with HasGameRef<PacmanGame> {
+class Enemy extends Character {
 
 
   Enemy() {
