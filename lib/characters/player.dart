@@ -32,7 +32,7 @@ class Player extends Character with KeyboardHandler {
       ),
     );
 
-    size = Vector2.all(tileSize - 4);
+    size = Vector2.all(tileSize - 5);
 
     add(RectangleHitbox());
 
@@ -51,53 +51,48 @@ class Player extends Character with KeyboardHandler {
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     if (event is RawKeyDownEvent) {
 
-      if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        if (velocity.x <= 0){
-          flipHorizontallyAroundCenter();
-        }
-      }
-      else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        if (velocity.x <= -1) {
-          flipHorizontallyAroundCenter();
-        }
-      }
-      else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-        velocity
-          ..y = -moveSpeed
-          ..x = 0;
-      }
-      else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-        velocity
-          ..y = moveSpeed
-          ..x = 0;
-      }
+      // if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      //   if (velocity.x <= 0){
+      //     flipHorizontallyAroundCenter();
+      //   }
+      // }
+      // else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      //   if (velocity.x <= -1) {
+      //     flipHorizontallyAroundCenter();
+      //   }
+      // }
+      // else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      //   velocity
+      //     ..y = -moveSpeed
+      //     ..x = 0;
+      // }
+      // else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      //   velocity
+      //     ..y = moveSpeed
+      //     ..x = 0;
+      // }
 
       lastPressedKey = event.logicalKey;
 
-    }
-    else if (event is RawKeyUpEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.escape) {
-        lastPressedKey = null;
-      }
     }
     return false;
   }
 
 
   void continueMoving()  {
-    if (lastPressedKey == LogicalKeyboardKey.arrowLeft) {
+    if (lastPressedKey == LogicalKeyboardKey.arrowLeft || lastPressedKey == LogicalKeyboardKey.keyA) {
       velocity
         ..x = -moveSpeed
         ..y = 0;
-    } else if (lastPressedKey == LogicalKeyboardKey.arrowRight) {
+    } else if (lastPressedKey == LogicalKeyboardKey.arrowRight || lastPressedKey == LogicalKeyboardKey.keyD) {
       velocity
         ..x = moveSpeed
         ..y = 0;
-    } else if (lastPressedKey == LogicalKeyboardKey.arrowUp) {
+    } else if (lastPressedKey == LogicalKeyboardKey.arrowUp || lastPressedKey == LogicalKeyboardKey.keyW) {
       velocity
         ..y = -moveSpeed
         ..x = 0;
-    } else if (lastPressedKey == LogicalKeyboardKey.arrowDown) {
+    } else if (lastPressedKey == LogicalKeyboardKey.arrowDown || lastPressedKey == LogicalKeyboardKey.keyS) {
       velocity
         ..y = moveSpeed
         ..x = 0;
@@ -110,14 +105,32 @@ class Player extends Character with KeyboardHandler {
   }
 
 
-  @override
-  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollisionStart(intersectionPoints, other);
+  bool canMoveLeft = true;
+  bool canMoveRight = true;
+  bool canMoveTop = true;
+  bool canMoveBottom = true;
+  final hitbox = RectangleHitbox();
 
+
+  @override
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints,
+      PositionComponent other,
+  ) {
+    final myCenter =
+    Vector2(position.x + tileSize / 2, position.y + tileSize / 2);
     if (other is Wall) {
+
+      lastPressedKey = null;
+      final diffX = myCenter.x - other.x;
+      final diffY = myCenter.y - other.y;
+      position = Vector2(position.x + diffX / 20, position.y + diffY / 20);
 
     }
 
+    super.onCollisionStart(intersectionPoints, other);
   }
+
+
 
 }

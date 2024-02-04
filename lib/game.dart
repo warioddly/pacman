@@ -1,9 +1,8 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
-import 'package:pacman/characters/enemy.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:pacman/level/map.dart';
-import 'package:pacman/characters/player.dart';
 
 
 class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
@@ -12,8 +11,9 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-
     debugMode = false;
+
+    FlameAudio.play('pacman_beginning.wav');
 
     await images.loadAll([
       'ember.png',
@@ -27,15 +27,12 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       Level()
         ..center = size / 5,
 
-      Enemy()
-        ..center = size / 1.8,
-      Enemy()
-        ..center = size / 3,
-      Enemy()
-        ..center = size / 1.5,
-
-      Player()
-        ..center = size / 2
+      // Enemy()
+      //   ..center = size / 1.8,
+      // Enemy()
+      //   ..center = size / 3,
+      // Enemy()
+      //   ..center = size / 1.5,
     ]);
 
   }

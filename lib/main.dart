@@ -4,7 +4,6 @@ import 'package:pacman/game.dart';
 
 void main() {
 
-  // FlameAudio.play('pacman_beginning.wav');
 
   runApp(GameWidget(game: PacmanGame()));
 

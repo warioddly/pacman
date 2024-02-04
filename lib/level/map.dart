@@ -1,5 +1,6 @@
 
 import 'package:flame/components.dart';
+import 'package:pacman/characters/player.dart';
 import 'package:pacman/components/dot.dart';
 import 'package:pacman/components/wall.dart';
 import 'package:pacman/config/constants.dart';
@@ -16,7 +17,7 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
 
     final List<String> pacmanMap = [
       "#######################",
-      "#..........#..........#",
+      "#.....p....#..........#",
       "#.##.###.#.#.#.###.##.#",
       "#..........#..........#",
       "#.####.#########.# #..#",
@@ -38,13 +39,25 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
 
         if (char == '#') {
 
-          add(Wall()
-            ..position = Vector2(x * tileSize, y * tileSize ));
+          add(Wall(
+            coordinates: Vector2(x.toDouble(), y.toDouble()),
+            position: Vector2(x * tileSize, y * tileSize))
+          );
 
         }
         if (char == '.') {
           add(Dot()
-            ..position = Vector2(x * tileSize * 1.02, y * tileSize));
+            ..position = Vector2(x * tileSize, y * tileSize)
+            ..center = Vector2(x * tileSize + 15, y * tileSize + 15)
+          );
+        }
+
+
+        if (char == 'p') {
+          add(Player()
+            ..position = Vector2(x * tileSize, y * tileSize)
+            ..center = Vector2(x * tileSize + 4, y * tileSize + 4)
+          );
         }
 
       }

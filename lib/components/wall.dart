@@ -10,10 +10,18 @@ import 'package:pacman/game.dart';
 class Wall extends PositionComponent with HasGameRef<PacmanGame>, CollisionCallbacks {
 
 
+  Wall({
+    required this.coordinates,
+    Vector2? position
+  }) : super(
+    position: position
+  );
+
   final paint = Paint()
     ..color = const Color(0xFF0000FF)
     ..strokeWidth = 2.0
     ..style = PaintingStyle.stroke;
+  final Vector2 coordinates;
 
 
   @override
