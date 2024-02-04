@@ -4,6 +4,8 @@ import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
 import 'package:pacman/components/wall.dart';
 import 'package:pacman/config/constants.dart';
+import 'package:pacman/level/map.dart';
+import 'package:pacman/utils/path_checker.dart';
 import 'character.dart';
 
 
@@ -15,6 +17,13 @@ class Player extends Character with KeyboardHandler {
   }
 
   LogicalKeyboardKey? lastPressedKey;
+  PathChecker pathChecker = PathChecker();
+
+
+  bool canMoveLeft = true;
+  bool canMoveRight = true;
+  bool canMoveTop = true;
+  bool canMoveBottom = true;
 
 
   @override
@@ -36,13 +45,25 @@ class Player extends Character with KeyboardHandler {
 
     add(RectangleHitbox());
 
+
+
   }
 
 
   @override
   void update(double dt) {
-    position += velocity * dt;
-    continueMoving();
+
+    final response = pathChecker.check(position, Level.map);
+
+    canMoveRight  = response.$1;
+    canMoveLeft   = response.$2;
+    canMoveTop    = response.$3;
+    canMoveBottom = response.$4;
+
+    print(response);
+
+    continueMoving(dt);
+
     super.update(dt);
   }
 
@@ -79,37 +100,42 @@ class Player extends Character with KeyboardHandler {
   }
 
 
-  void continueMoving()  {
-    if (lastPressedKey == LogicalKeyboardKey.arrowLeft || lastPressedKey == LogicalKeyboardKey.keyA) {
+  void continueMoving(dt)  {
+    if (canMoveLeft && lastPressedKey == LogicalKeyboardKey.arrowLeft || lastPressedKey == LogicalKeyboardKey.keyA) {
       velocity
         ..x = -moveSpeed
         ..y = 0;
-    } else if (lastPressedKey == LogicalKeyboardKey.arrowRight || lastPressedKey == LogicalKeyboardKey.keyD) {
+      position += velocity * dt;
+    }
+    else if (canMoveRight && lastPressedKey == LogicalKeyboardKey.arrowRight || lastPressedKey == LogicalKeyboardKey.keyD) {
       velocity
         ..x = moveSpeed
         ..y = 0;
-    } else if (lastPressedKey == LogicalKeyboardKey.arrowUp || lastPressedKey == LogicalKeyboardKey.keyW) {
+      position += velocity * dt;
+
+    }
+    else if (canMoveTop && lastPressedKey == LogicalKeyboardKey.arrowUp || lastPressedKey == LogicalKeyboardKey.keyW) {
       velocity
         ..y = -moveSpeed
         ..x = 0;
-    } else if (lastPressedKey == LogicalKeyboardKey.arrowDown || lastPressedKey == LogicalKeyboardKey.keyS) {
+      position += velocity * dt;
+    }
+    else if (canMoveBottom && lastPressedKey == LogicalKeyboardKey.arrowDown || lastPressedKey == LogicalKeyboardKey.keyS) {
       velocity
         ..y = moveSpeed
         ..x = 0;
+      position += velocity * dt;
+
     }
-    else {
+
+    if (lastPressedKey == LogicalKeyboardKey.escape) {
       velocity
-        ..x = 0
-        ..y = 0;
+        ..y = 0
+        ..x = 0;
     }
+
+
   }
-
-
-  bool canMoveLeft = true;
-  bool canMoveRight = true;
-  bool canMoveTop = true;
-  bool canMoveBottom = true;
-  final hitbox = RectangleHitbox();
 
 
   @override
