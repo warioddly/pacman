@@ -11,8 +11,8 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
 
   static const List<String> map = [
     "#######################",
-    "#.....p....#..........#",
-    "#.##.###.#.#.#.###.##.#",
+    "#..........#..........#",
+    "#.##p###.#.#.#.###.##.#",
     "#..........#..........#",
     "#.####.#########.#.#..#",
     "#.#.#.....#......#....#",
@@ -38,10 +38,12 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
 
         if (char == '#') {
 
-          add(Wall(
-            coordinates: Vector2(x.toDouble(), y.toDouble()),
-            position: Vector2(x * tileSize, y * tileSize))
+          add(Wall()
+            ..position = Vector2(x * tileSize, y * tileSize)
+            ..coordinates = Vector2(x * tileSize, y * tileSize)
+            ..id = [x, y].toString()
           );
+
 
           continue;
 

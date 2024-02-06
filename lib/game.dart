@@ -38,6 +38,7 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
 
     add(FpsTextComponent());
 
+
     add(
         Level()
           ..anchor = Anchor.center

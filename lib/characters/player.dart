@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pacman/components/wall.dart';
 import 'package:pacman/config/constants.dart';
+import 'package:pacman/level/map.dart';
 import 'character.dart';
 
 
@@ -38,12 +39,11 @@ class Player extends Character with KeyboardHandler {
 
     size = Vector2.all(tileSize);
 
+    // add(RectangleHitbox());
 
   }
 
-  Ray2? ray;
-  Ray2? reflection;
-  static const numberOfRays = 4;
+
   final List<Ray2> rays = [];
   final List<RaycastResult<ShapeHitbox>> results = [];
 
@@ -54,31 +54,26 @@ class Player extends Character with KeyboardHandler {
   bool canMoveLeft = true;
   bool canMoveRight = true;
 
-  late Ray2 rightRay;
-  late Ray2 leftRay;
 
   @override
   void update(double dt) {
 
-    gameRef.collisionDetection.raycastAll(
-      getOrigin,
-      numberOfRays: numberOfRays,
-      rays: rays,
-      out: results,
-      maxDistance: 300
-    );
-
-    for (final result in results) {
-
-      getRayDirection(result);
-
-    }
+    // gameRef.collisionDetection.raycastAll(
+    //     getOrigin,
+    //     numberOfRays: 4,
+    //     maxDistance: tileSize * 2,
+    //     out: results,
+    // );
+    //
+    // for (final result in results) {
+    //   getRayDirection(result);
+    // }
 
     continueMoving(dt);
-    super.update(dt);
+
+    return super.update(dt);
 
   }
-
 
 
   void getRayDirection(RaycastResult<ShapeHitbox> ray) {
@@ -87,25 +82,16 @@ class Player extends Character with KeyboardHandler {
       return;
     }
 
-    final distance = ray.intersectionPoint!.distanceTo(absolutePosition) / tileSize;
+    final distance = (ray.intersectionPoint?.distanceTo(absolutePosition) ?? 0) / tileSize;
+    const safetyDistance = 0.80;
 
-    const safetyDistance = 0.65;
-
-    canMoveRight = true;
-    canMoveLeft = true;
-
-
-
-    if(ray.normal!.x == -1 && distance <= safetyDistance) {
-      canMoveRight = false;
-    }
-
-    if(ray.normal!.x == 1 && distance >= safetyDistance) {
-      canMoveLeft = false;
-    }
-
+    canMoveRight = !(ray.normal!.x == -1 && distance <= safetyDistance);
+    canMoveLeft = !(ray.normal!.x == 1 && distance <= safetyDistance);
+    canMoveBottom = !(ray.normal!.y == -1 && distance <= safetyDistance);
+    canMoveTop = !(ray.normal!.y == 1 && distance <= safetyDistance);
 
   }
+
 
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
@@ -116,36 +102,44 @@ class Player extends Character with KeyboardHandler {
   }
 
 
-  void continueMoving(dt)  {
-    if (canMoveLeft && (lastPressedKey == LogicalKeyboardKey.arrowLeft || lastPressedKey == LogicalKeyboardKey.keyA)) {
-      velocity = Vector2(-moveSpeed, 0);
-      position += velocity * dt;
-      return;
+  void continueMoving(double dt) {
+    switch (lastPressedKey) {
+      case LogicalKeyboardKey.arrowLeft:
+      case LogicalKeyboardKey.keyA:
+        if (canMoveLeft) {
+          velocity = Vector2(-moveSpeed, 0);
+          position += velocity * dt;
+        }
+        break;
+      case LogicalKeyboardKey.arrowRight:
+      case LogicalKeyboardKey.keyD:
+        if (canMoveRight) {
+          velocity = Vector2(moveSpeed, 0);
+          position += velocity * dt;
+        }
+        break;
+      case LogicalKeyboardKey.arrowUp:
+      case LogicalKeyboardKey.keyW:
+        if (canMoveTop) {
+          velocity = Vector2(0, -moveSpeed);
+          position += velocity * dt;
+        }
+        break;
+      case LogicalKeyboardKey.arrowDown:
+      case LogicalKeyboardKey.keyS:
+        if (canMoveBottom) {
+          velocity = Vector2(0, moveSpeed);
+          position += velocity * dt;
+        }
+        break;
+      case LogicalKeyboardKey.escape:
+        velocity = Vector2.zero();
+        break;
+      default:
+        velocity = Vector2.zero();
+        break;
     }
-    else if (canMoveRight && (lastPressedKey == LogicalKeyboardKey.arrowRight || lastPressedKey == LogicalKeyboardKey.keyD)) {
-      velocity = Vector2(moveSpeed, 0);
-      position += velocity * dt;
-      return;
-    }
-    else if (canMoveTop && (lastPressedKey == LogicalKeyboardKey.arrowUp || lastPressedKey == LogicalKeyboardKey.keyW)) {
-      velocity = Vector2(0, -moveSpeed);
-      position += velocity * dt;
-      return;
-    }
-    else if (canMoveBottom && (lastPressedKey == LogicalKeyboardKey.arrowDown || lastPressedKey == LogicalKeyboardKey.keyS)) {
-      velocity = Vector2(0, moveSpeed);
-      position += velocity * dt;
-      return;
-    }
-    else if (lastPressedKey == LogicalKeyboardKey.escape) {
-      velocity = Vector2.zero();
-    }
-    else {
-      velocity = Vector2.zero();
-    }
-
   }
-
 
 
   @override
@@ -153,7 +147,6 @@ class Player extends Character with KeyboardHandler {
     super.render(canvas);
     renderResult(canvas, getOrigin, results, paint);
   }
-
 
 
   void renderResult(
