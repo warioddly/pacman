@@ -3,6 +3,15 @@ import 'package:flame/components.dart';
 import 'package:pacman/game.dart';
 
 
+
+enum Direction {
+  up,
+  down,
+  left,
+  right,
+  stop,
+}
+
 class Character extends SpriteAnimationComponent with HasGameRef<PacmanGame>, CollisionCallbacks {
 
 

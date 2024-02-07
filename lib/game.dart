@@ -1,15 +1,15 @@
+import 'dart:async';
 import 'dart:ui';
-
-import 'package:flame/camera.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
-import 'package:pacman/config/constants.dart';
+import 'package:pacman/characters/player.dart';
 import 'package:pacman/level/map.dart';
 
 
-class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
+
+class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasQuadTreeCollisionDetection {
 
 
   PacmanGame({
@@ -19,6 +19,7 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       width: viewportResolution.x,
       height: viewportResolution.y,
     ),
+    world: MyWorld(),
   );
 
   final Vector2 viewportResolution;
@@ -26,9 +27,16 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+
     debugMode = false;
 
     // FlameAudio.play('pacman_beginning.wav');
+
+    initializeCollisionDetection(
+      mapDimensions: Rect.fromLTWH(0, 0, viewportResolution.x, viewportResolution.y),
+      minimumDistance: 10,
+    );
+
 
     await images.loadAll([
       'ember.png',
@@ -37,16 +45,34 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     ]);
 
     add(FpsTextComponent());
-
-
-    add(
-        Level()
-          ..anchor = Anchor.center
-    );
-
+    add(ScreenHitbox());
 
 
   }
 
+
+}
+
+
+class MyWorld extends World with HasGameRef<PacmanGame>, HasCollisionDetection {
+
+  late final Player player;
+
+  @override
+  FutureOr<void> onLoad() {
+
+    super.onLoad();
+
+    add(player = Player());
+
+    gameRef.camera.follow(player, maxSpeed: 200);
+
+    addAll([
+
+      Level()
+
+    ]);
+
+  }
 
 }

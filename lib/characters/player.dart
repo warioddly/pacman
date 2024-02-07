@@ -1,14 +1,9 @@
 import 'dart:async';
-import 'dart:math';
-import 'dart:ui';
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/geometry.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pacman/components/wall.dart';
 import 'package:pacman/config/constants.dart';
 import 'package:pacman/level/map.dart';
+import 'package:pacman/utils/path_checker.dart';
 import 'character.dart';
 
 
@@ -19,7 +14,6 @@ class Player extends Character with KeyboardHandler {
     setMoveSpeed = playerSpeed;
   }
 
-  LogicalKeyboardKey? lastPressedKey;
 
 
   @override
@@ -39,58 +33,70 @@ class Player extends Character with KeyboardHandler {
 
     size = Vector2.all(tileSize);
 
-    // add(RectangleHitbox());
+    lastPosition = position;
+
 
   }
 
-
-  final List<Ray2> rays = [];
-  final List<RaycastResult<ShapeHitbox>> results = [];
-
-  get getOrigin => absolutePosition;
-
+  final pathChecker = PathChecker();
+  LogicalKeyboardKey? lastPressedKey;
   bool canMoveTop = true;
   bool canMoveBottom = true;
   bool canMoveLeft = true;
   bool canMoveRight = true;
 
+  Vector2 lastPosition = Vector2.zero();
+  Direction lastDirection = Direction.stop;
 
   @override
   void update(double dt) {
+    super.update(dt);
 
-    // gameRef.collisionDetection.raycastAll(
-    //     getOrigin,
-    //     numberOfRays: 4,
-    //     maxDistance: tileSize * 2,
-    //     out: results,
-    // );
-    //
-    // for (final result in results) {
-    //   getRayDirection(result);
+    final pos = position;
+
+    dynamic x = pos.x.round();
+    dynamic y = pos.y.round();
+
+
+    if ((y % tileSize).toInt() == 0) {
+
+      if (lastDirection == Direction.up) {
+        canMoveTop = pathChecker.canMove(Vector2(x, y), Level.map, Direction.up);
+        lastPosition.y = y;
+      }
+
+      if (lastDirection == Direction.down) {
+        canMoveBottom = pathChecker.canMove(Vector2(x, y), Level.map, Direction.down);
+        lastPosition.y = y;
+      }
+
+    }
+
+
+    if ((x % tileSize).toInt() == 0) {
+
+      if (lastDirection == Direction.left) {
+        canMoveLeft = pathChecker.canMove(Vector2(x, y), Level.map, Direction.left);
+        lastPosition.x = x;
+      }
+
+      if (lastDirection == Direction.right) {
+        canMoveRight = pathChecker.canMove(Vector2(x, y), Level.map, Direction.right);
+        lastPosition.x = x;
+      }
+
+    }
+
+
+    // if ((x % 10).toInt() == 0) {
+    //   canMoveLeft = pathChecker.canMove(pos, Level.map, Direction.left);
+    //   canMoveRight = pathChecker.canMove(pos, Level.map, Direction.right);
     // }
 
     continueMoving(dt);
 
-    return super.update(dt);
-
   }
 
-
-  void getRayDirection(RaycastResult<ShapeHitbox> ray) {
-
-    if (!ray.isActive) {
-      return;
-    }
-
-    final distance = (ray.intersectionPoint?.distanceTo(absolutePosition) ?? 0) / tileSize;
-    const safetyDistance = 0.80;
-
-    canMoveRight = !(ray.normal!.x == -1 && distance <= safetyDistance);
-    canMoveLeft = !(ray.normal!.x == 1 && distance <= safetyDistance);
-    canMoveBottom = !(ray.normal!.y == -1 && distance <= safetyDistance);
-    canMoveTop = !(ray.normal!.y == 1 && distance <= safetyDistance);
-
-  }
 
 
   @override
@@ -109,6 +115,7 @@ class Player extends Character with KeyboardHandler {
         if (canMoveLeft) {
           velocity = Vector2(-moveSpeed, 0);
           position += velocity * dt;
+          lastDirection = Direction.left;
         }
         break;
       case LogicalKeyboardKey.arrowRight:
@@ -116,6 +123,7 @@ class Player extends Character with KeyboardHandler {
         if (canMoveRight) {
           velocity = Vector2(moveSpeed, 0);
           position += velocity * dt;
+          lastDirection = Direction.right;
         }
         break;
       case LogicalKeyboardKey.arrowUp:
@@ -123,6 +131,7 @@ class Player extends Character with KeyboardHandler {
         if (canMoveTop) {
           velocity = Vector2(0, -moveSpeed);
           position += velocity * dt;
+          lastDirection = Direction.up;
         }
         break;
       case LogicalKeyboardKey.arrowDown:
@@ -130,47 +139,19 @@ class Player extends Character with KeyboardHandler {
         if (canMoveBottom) {
           velocity = Vector2(0, moveSpeed);
           position += velocity * dt;
+          lastDirection = Direction.down;
         }
         break;
       case LogicalKeyboardKey.escape:
         velocity = Vector2.zero();
+        lastDirection = Direction.stop;
         break;
       default:
         velocity = Vector2.zero();
+        lastDirection = Direction.stop;
         break;
     }
-  }
 
-
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-    renderResult(canvas, getOrigin, results, paint);
-  }
-
-
-  void renderResult(
-      Canvas canvas,
-      Vector2 origin,
-      List<RaycastResult<ShapeHitbox>> results,
-      Paint paint,
-  ) {
-
-    final originOffset = origin.toOffset();
-
-    for (final result in results) {
-      if (!result.isActive) {
-        continue;
-      }
-      final intersectionPoint = result.intersectionPoint!.toOffset();
-      canvas.drawLine(
-        originOffset,
-        intersectionPoint,
-        paint,
-      );
-    }
-
-    canvas.drawCircle(originOffset, 5, paint);
   }
 
 

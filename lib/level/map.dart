@@ -1,7 +1,5 @@
 
 import 'package:flame/components.dart';
-import 'package:pacman/characters/player.dart';
-import 'package:pacman/components/dot.dart';
 import 'package:pacman/components/wall.dart';
 import 'package:pacman/config/constants.dart';
 import 'package:pacman/game.dart';
@@ -39,14 +37,10 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
         if (char == '#') {
 
           add(Wall()
-            ..position = Vector2(x * tileSize, y * tileSize)
-            ..coordinates = Vector2(x * tileSize, y * tileSize)
-            ..id = [x, y].toString()
+            ..position = Vector2((x + position.x) * tileSize, y * tileSize)
           );
 
-
           continue;
-
         }
         // if (char == '.') {
         //   add(Dot()
@@ -56,10 +50,7 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
         // continue;
         // }
         if (char == 'p') {
-          add(Player()
-            ..position = Vector2(x * tileSize, y * tileSize)
-            ..center = Vector2(x * tileSize, y * tileSize)
-          );
+          (gameRef.world as MyWorld).player.position = Vector2(x * tileSize, y * tileSize);
         }
 
       }
