@@ -3,9 +3,7 @@ import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame_audio/flame_audio.dart';
-import 'package:pacman/config/constants.dart';
-import 'package:pacman/characters/player.dart';
+import 'package:pacman/core/constants.dart';
 
 import 'character.dart';
 
@@ -74,22 +72,22 @@ class Enemy extends Character {
   }
 
 
-  @override
-  void onCollisionStart(
-    Set<Vector2> intersectionPoints,
-    PositionComponent other,
-  ) {
-    super.onCollisionStart(intersectionPoints, other);
-
-    if (other is Player) {
-      FlameAudio.play('pacman_death.wav');
-    }
-
-    if (other is Enemy) {
-      randomMovement();
-    }
-
-  }
+  // @override
+  // void onCollisionStart(
+  //   Set<Vector2> intersectionPoints,
+  //   PositionComponent other,
+  // ) {
+  //   super.onCollisionStart(intersectionPoints, other);
+  //
+  //   if (other is Player) {
+  //     FlameAudio.play('pacman_death.wav');
+  //   }
+  //
+  //   if (other is Enemy) {
+  //     randomMovement();
+  //   }
+  //
+  // }
 
 
 

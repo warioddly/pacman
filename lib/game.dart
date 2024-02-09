@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -9,7 +7,7 @@ import 'package:pacman/level/map.dart';
 
 
 
-class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasQuadTreeCollisionDetection {
+class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
 
 
   PacmanGame({
@@ -19,10 +17,11 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasQuadTre
       width: viewportResolution.x,
       height: viewportResolution.y,
     ),
-    world: MyWorld(),
   );
 
   final Vector2 viewportResolution;
+  final Player player = Player();
+  late final CameraComponent cam;
 
   @override
   Future<void> onLoad() async {
@@ -31,12 +30,6 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasQuadTre
     debugMode = false;
 
     // FlameAudio.play('pacman_beginning.wav');
-
-    initializeCollisionDetection(
-      mapDimensions: Rect.fromLTWH(0, 0, viewportResolution.x, viewportResolution.y),
-      minimumDistance: 10,
-    );
-
 
     await images.loadAll([
       'ember.png',
@@ -47,6 +40,19 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasQuadTre
     add(FpsTextComponent());
     add(ScreenHitbox());
 
+    final world = Level();
+
+    cam = CameraComponent.withFixedResolution(
+      world: world,
+      width: viewportResolution.x,
+      height: viewportResolution.y,
+    );
+
+   cam.follow(player);
+    // cam.viewfinder.anchor = Anchor.topLeft;
+
+    addAll([cam, world]);
+    world.add(player);
 
   }
 
@@ -54,25 +60,3 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasQuadTre
 }
 
 
-class MyWorld extends World with HasGameRef<PacmanGame>, HasCollisionDetection {
-
-  late final Player player;
-
-  @override
-  FutureOr<void> onLoad() {
-
-    super.onLoad();
-
-    add(player = Player());
-
-    gameRef.camera.follow(player, maxSpeed: 200);
-
-    addAll([
-
-      Level()
-
-    ]);
-
-  }
-
-}

@@ -1,11 +1,11 @@
 
 import 'package:flame/components.dart';
-import 'package:pacman/components/wall.dart';
-import 'package:pacman/config/constants.dart';
+import 'package:pacman/decorations/wall.dart';
+import 'package:pacman/core/constants.dart';
 import 'package:pacman/game.dart';
 
 
-class Level extends PositionComponent with HasGameRef<PacmanGame> {
+class Level extends World with HasGameRef<PacmanGame> {
 
   static const List<String> map = [
     "#######################",
@@ -27,6 +27,7 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
 
   @override
   Future<void> onLoad() async {
+
     await super.onLoad();
 
     for (var y = 0; y < map.length; y++) {
@@ -37,7 +38,7 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
         if (char == '#') {
 
           add(Wall()
-            ..position = Vector2((x + position.x) * tileSize, y * tileSize)
+            ..position = Vector2(x * tileSize, y * tileSize)
           );
 
           continue;
@@ -50,7 +51,7 @@ class Level extends PositionComponent with HasGameRef<PacmanGame> {
         // continue;
         // }
         if (char == 'p') {
-          (gameRef.world as MyWorld).player.position = Vector2(x * tileSize, y * tileSize);
+          gameRef.player.position = Vector2(x * tileSize, y * tileSize);
         }
 
       }

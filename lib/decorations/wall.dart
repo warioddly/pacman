@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
-import 'package:pacman/config/constants.dart';
+import 'package:pacman/core/constants.dart';
 import 'package:pacman/game.dart';
 
 
@@ -36,6 +36,10 @@ class Wall extends PositionComponent with HasGameRef<PacmanGame>, CollisionCallb
 
   }
 
+
+  Rect getRect() {
+    return Rect.fromLTWH(x, y, width, height);
+  }
 
 
 }

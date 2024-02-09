@@ -1,10 +1,13 @@
+import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:pacman/game.dart';
 
-void main() {
 
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Flame.device.fullScreen();
+  await Flame.device.setLandscape();
   runApp(const Game());
 
 }
