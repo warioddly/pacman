@@ -7,9 +7,11 @@ import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
 import 'package:pacman/core/extensions/extensions.dart';
+import 'package:pacman/core/mixins/internal_checker.dart';
+import 'package:pacman/core/mixins/sensor.dart';
 import 'package:pacman/game.dart';
 
-abstract class MyComponent extends PositionComponent with HasGameRef<PacmanGame>, HasPaint, CollisionCallbacks {
+abstract class MyComponent extends PositionComponent with HasGameRef<PacmanGame>, HasPaint, CollisionCallbacks, InternalChecker {
   final String _keyIntervalCheckIsVisible = "CHECK_VISIBLE";
   final int _intervalCheckIsVisible = 100;
   Map<String, dynamic>? properties;
@@ -127,15 +129,15 @@ abstract class MyComponent extends PositionComponent with HasGameRef<PacmanGame>
 
   void _confHitBoxRender(Component component) {
     if (component is ShapeHitbox) {
-      if (gameRef.showCollisionArea) {
+      // if (gameRef.showCollisionArea) {
         var paintCollition = Paint()
-          ..color = gameRef.collisionAreaColor ?? const Color(0xffffffff);
+          ..color = const Color(0xffffffff);
         if (component is Sensor) {
           paintCollition.color = sensorColor;
         }
         component.paint = paintCollition;
         component.renderShape = true;
-      }
+      // }
     }
   }
 
@@ -244,19 +246,19 @@ abstract class MyComponent extends PositionComponent with HasGameRef<PacmanGame>
 
   List<ShapeHitbox> _getSensorsHitbox() {
     var sensorHitBox = <ShapeHitbox>[];
-    // query<Sensor>(onlyVisible: true).forEach((e) {
-    //   sensorHitBox.addAll(e.children.query<ShapeHitbox>());
-    // });
+    query<Sensor>(onlyVisible: true).forEach((e) {
+      sensorHitBox.addAll(e.children.query<ShapeHitbox>());
+    });
     return sensorHitBox;
   }
 
 
-  // Iterable<T> query<T extends Component>({bool onlyVisible = false}) {
-    // if (onlyVisible) {
-    //   return _visibleComponents.whereType<T>();
-    // }
-    // return world.children.query<T>();
-  // }
+  Iterable<T> query<T extends Component>({bool onlyVisible = false}) {
+    if (onlyVisible) {
+      return _visibleComponents.whereType<T>();
+    }
+    return gameRef.world.children.query<T>();
+  }
 
 
   @override
