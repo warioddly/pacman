@@ -25,6 +25,9 @@ class Level extends World with HasGameRef<PacmanGame> {
     "#######################"
   ];
 
+
+  final walls = <Wall>[];
+
   @override
   Future<void> onLoad() async {
 
@@ -37,9 +40,11 @@ class Level extends World with HasGameRef<PacmanGame> {
 
         if (char == '#') {
 
-          add(Wall()
-            ..position = Vector2(x * tileSize, y * tileSize)
-          );
+          final wall = Wall()
+            ..position = Vector2(x * tileSize, y * tileSize);
+
+          add(wall);
+          walls.add(wall);
 
           continue;
         }

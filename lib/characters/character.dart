@@ -3,6 +3,14 @@ import 'package:flame/components.dart';
 import 'package:pacman/game.dart';
 
 
+enum Direction {
+  left,
+  right,
+  up,
+  down,
+  idle,
+}
+
 class Character extends SpriteAnimationComponent with HasGameRef<PacmanGame> {
 
 
@@ -17,14 +25,11 @@ class Character extends SpriteAnimationComponent with HasGameRef<PacmanGame> {
   );
 
   Vector2 velocity = Vector2.zero();
-  double _moveSpeed = 100.0;
+  double moveSpeed = 100.0;
+  Direction direction = Direction.idle;
 
 
-  set setMoveSpeed(double speed) {
-    _moveSpeed = speed;
-  }
 
 
-  get moveSpeed => _moveSpeed;
 
 }

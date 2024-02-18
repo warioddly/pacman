@@ -12,7 +12,7 @@ class Enemy extends Character {
 
 
   Enemy() {
-    setMoveSpeed = enemySpeed;
+    moveSpeed = enemySpeed;
   }
 
 

@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
@@ -22,7 +21,6 @@ class Wall extends PositionComponent with HasGameRef<PacmanGame>, CollisionCallb
     await super.onLoad();
 
     add(
-
       RectangleHitbox(
         size: Vector2.all(tileSize),
       )
@@ -31,7 +29,6 @@ class Wall extends PositionComponent with HasGameRef<PacmanGame>, CollisionCallb
         ..debugMode = false
         ..priority = 1
         ..renderShape = true
-
     );
 
   }
@@ -40,6 +37,7 @@ class Wall extends PositionComponent with HasGameRef<PacmanGame>, CollisionCallb
   Rect getRect() {
     return Rect.fromLTWH(x, y, width, height);
   }
+
 
 
 }
