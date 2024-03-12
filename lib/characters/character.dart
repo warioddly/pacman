@@ -1,4 +1,6 @@
 
+import 'dart:ui';
+
 import 'package:flame/components.dart';
 import 'package:pacman/game.dart';
 
@@ -29,7 +31,9 @@ class Character extends SpriteAnimationComponent with HasGameRef<PacmanGame> {
   Direction direction = Direction.idle;
 
 
-
+  Rect getRect() {
+    return Rect.fromLTWH(x, y, width, height);
+  }
 
 
 }

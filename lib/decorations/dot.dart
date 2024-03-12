@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:pacman/game.dart';
 import 'package:pacman/characters/player.dart';
 
@@ -33,7 +34,7 @@ class Dot extends SpriteAnimationComponent with HasGameRef<PacmanGame>, Collisio
   void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
     if (other is Player) {
-      // FlameAudio.play('pacman_chomp.wav');
+      FlameAudio.play('pacman_chomp.wav');
       removeFromParent();
     }
   }

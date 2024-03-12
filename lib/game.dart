@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:pacman/characters/player.dart';
 import 'package:pacman/level/map.dart';
 
@@ -29,7 +30,7 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
 
     debugMode = false;
 
-    // FlameAudio.play('pacman_beginning.wav');
+    FlameAudio.play('pacman_beginning.wav');
 
     await images.loadAll([
       'ember.png',
@@ -46,9 +47,7 @@ class PacmanGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       world: world,
       width: viewportResolution.x,
       height: viewportResolution.y,
-    );
-
-   cam.follow(player);
+    )..follow(player);
     // cam.viewfinder.anchor = Anchor.topLeft;
 
     addAll([cam, world]);

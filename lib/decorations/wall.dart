@@ -33,12 +33,5 @@ class Wall extends PositionComponent with HasGameRef<PacmanGame>, CollisionCallb
 
   }
 
-
-  Rect getRect() {
-    return Rect.fromLTWH(x, y, width, height);
-  }
-
-
-
 }
 

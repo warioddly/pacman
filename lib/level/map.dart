@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:pacman/decorations/wall.dart';
 import 'package:pacman/core/constants.dart';
 import 'package:pacman/game.dart';
+import 'package:pacman/decorations/dot.dart';
 
 
 class Level extends World with HasGameRef<PacmanGame> {
