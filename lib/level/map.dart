@@ -48,13 +48,13 @@ class Level extends World with HasGameRef<PacmanGame> {
 
           continue;
         }
-        // if (char == '.') {
-        //   add(Dot()
-        //     ..position = Vector2(x * tileSize, y * tileSize)
-        //     ..center = Vector2(x * tileSize + 15, y * tileSize + 15)
-        //   );
-        // continue;
-        // }
+        if (char == '.') {
+          add(Dot()
+            ..position = Vector2(x * tileSize, y * tileSize)
+            ..center = Vector2(x * tileSize + 15, y * tileSize + 15)
+          );
+        continue;
+        }
         if (char == 'p') {
           gameRef.player.position = Vector2(x * tileSize, y * tileSize);
         }
